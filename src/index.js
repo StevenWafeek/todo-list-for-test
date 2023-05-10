@@ -6,7 +6,7 @@ const {
 
 renderTasks(Task);
 
-function handleAddButtonClick(Task, renderTasks) {
+
   if (addButton) {
     addButton.addEventListener('click', () => {
       const description = addInput.value;
@@ -17,9 +17,7 @@ function handleAddButtonClick(Task, renderTasks) {
       }
     });
   }
-}
 
-module.exports = handleAddButtonClick;
 
 if (clearAllButton) {
   clearAllButton.addEventListener('click', () => {

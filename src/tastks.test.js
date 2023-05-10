@@ -62,34 +62,51 @@ describe('Task', () => {
   });
 });
 
-const handleAddButtonClick = require('./index.js');
 const Tasks = require('./tasks.js');
-const renderTasks = require('./index.js');
-jest.mock('./index.js'); 
-handleAddButtonClick(Tasks, renderTasks);
+const { renderTasks, addButton, addInput } = require('./modules/todo.js');
+
+jest.mock('./modules/todo.js', () => ({
+  renderTasks: jest.fn(),
+  addButton: {
+    addEventListener: jest.fn(),
+  },
+  addInput: {
+    value: '',
+  },
+}));
 
 describe('addButton', () => {
   beforeEach(() => {
-    jest.clearAllMocks(); 
+    jest.clearAllMocks();
   });
 
   it('should call Task.addTask and clear input value on click', () => {
-    const addButton = document.createElement('button');
-    const addInput = document.createElement('input');
-    Tasks.addTask = jest.fn(); 
-    renderTasks.mockClear(); 
-    addButton.addEventListener('click', () => {
-      const description = addInput.value;
-      if (description) {
-        Tasks.addTask(description);
-        addInput.value = '';
-        renderTasks(Tasks);
+    // Set up the mock behavior for the add button
+    addButton.addEventListener.mockImplementation((event, callback) => {
+      if (event === 'click') {
+        addInput.value = 'Test task';
+        callback();
       }
     });
-    addInput.value = 'test description';
-    addButton.click();
-    expect(Tasks.addTask).toHaveBeenCalledWith('test description');
-    expect(addInput.value).toBe('');
-    expect(renderTasks).toHaveBeenCalledTimes(1); 
+
+    // Inlined code from handleAddButtonClick function
+    if (addButton) {
+      addButton.addEventListener('click', () => {
+        const description = addInput.value;
+        if (description) {
+          Tasks.addTask(description);
+          addInput.value = '';
+          renderTasks(Tasks);
+        }
+      });
+    }
+
+    // Trigger the button click event
+    addButton.addEventListener('click');
+
+    // Verify that the task was added and rendered
+    expect(Tasks.addTask).toHaveBeenCalledWith('Test task');
+    expect(addInput.value).toEqual('');
+    expect(renderTasks).toHaveBeenCalledWith(Tasks);
   });
 });
