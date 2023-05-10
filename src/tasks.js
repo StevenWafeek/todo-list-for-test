@@ -50,4 +50,5 @@ class Task {
   }
 }
 
-export default Task;
+// export default Task;
+module.exports = Task;
